@@ -1,0 +1,30 @@
+{
+  "name": "@bioctl/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "exports": {
+    ".": {
+      "types": "./src/index.ts",
+      "default": "./dist/index.js"
+    },
+    "./config": {
+      "types": "./src/config.ts",
+      "default": "./dist/config.js"
+    },
+    "./security": {
+      "types": "./src/security.ts",
+      "default": "./dist/security.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "zod": "^4.1.5"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0"
+  }
+}

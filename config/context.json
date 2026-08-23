@@ -1,0 +1,14 @@
+[
+  {
+    "id": "about-bioctl",
+    "title": "About this page",
+    "content": "This page runs on bioctl, a self-hosted link page with a small optional chat. Its links, colors, copy, provider, and domain can all be replaced.",
+    "classification": "public"
+  },
+  {
+    "id": "security",
+    "title": "Chat security",
+    "content": "The chat has no tools, account access, browser, filesystem, email, or arbitrary network access. Visitor questions and retrieved context stay separate from trusted instructions. Local-only context can run only through the local connector.",
+    "classification": "public"
+  }
+]

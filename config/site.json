@@ -1,0 +1,63 @@
+{
+  "profile": {
+    "name": "Kernel Kittens",
+    "handle": "@kernelkittens",
+    "bio": "Small tools, strange computers, and whatever we are building next.",
+    "status": "online"
+  },
+  "appearance": {
+    "accent": "#ff4f9a",
+    "background": "#f5f1e8",
+    "surface": "#fffdf7",
+    "foreground": "#191716",
+    "radius": "soft"
+  },
+  "links": [
+    {
+      "id": "home",
+      "label": "Your website",
+      "href": "https://example.com",
+      "description": "Swap this for your main site.",
+      "icon": "globe",
+      "enabled": true
+    },
+    {
+      "id": "code",
+      "label": "Your code",
+      "href": "https://github.com",
+      "description": "Projects, experiments, and source.",
+      "icon": "github",
+      "enabled": true
+    },
+    {
+      "id": "community",
+      "label": "Your community",
+      "href": "https://discord.com",
+      "description": "The place where people hang out.",
+      "icon": "discord",
+      "enabled": true
+    },
+    {
+      "id": "email",
+      "label": "Email",
+      "href": "mailto:hello@example.com",
+      "description": "Replace this address before launch.",
+      "icon": "mail",
+      "enabled": true
+    }
+  ],
+  "chat": {
+    "enabled": true,
+    "title": "Ask this page",
+    "placeholder": "What are you working on?",
+    "welcome": "Ask about the public context attached to this page.",
+    "provider": "mock",
+    "model": "mock",
+    "systemPrompt": "Answer clearly and briefly in the site owner's voice. Use only supplied context. If the context does not support an answer, say that the page owner did not provide that information.",
+    "maxInputCharacters": 4000
+  },
+  "footer": {
+    "showPoweredBy": false,
+    "text": ""
+  }
+}

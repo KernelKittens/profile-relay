@@ -1,0 +1,41 @@
+services:
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: bioctl:local
+    restart: unless-stopped
+    init: true
+    ports:
+      - "${BIOCTL_PORT:-3000}:3000"
+    environment:
+      BIOCTL_BRIDGE_TOKEN: "${BIOCTL_BRIDGE_TOKEN:-}"
+      BIOCTL_TRUST_PROXY: "${BIOCTL_TRUST_PROXY:-false}"
+      OPENAI_API_KEY: "${OPENAI_API_KEY:-}"
+      ANTHROPIC_API_KEY: "${ANTHROPIC_API_KEY:-}"
+      BIOCTL_COMPATIBLE_BASE_URL: "${BIOCTL_COMPATIBLE_BASE_URL:-}"
+      BIOCTL_COMPATIBLE_API_KEY: "${BIOCTL_COMPATIBLE_API_KEY:-}"
+    volumes:
+      - ./config:/app/config:ro
+      - bioctl-data:/app/data
+    read_only: true
+    tmpfs:
+      - /tmp:size=64m,mode=1777
+    cap_drop:
+      - ALL
+    security_opt:
+      - no-new-privileges:true
+    pids_limit: 200
+    healthcheck:
+      test:
+        - CMD
+        - node
+        - -e
+        - fetch('http://127.0.0.1:3000/api/health').then(r=>{if(!r.ok)process.exit(1)}).catch(()=>process.exit(1))
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 20s
+
+volumes:
+  bioctl-data:

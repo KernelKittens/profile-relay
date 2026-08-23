@@ -1,0 +1,22 @@
+{
+  "name": "@bioctl/cli",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "bin": {
+    "bioctl": "dist/index.js"
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit"
+  },
+  "dependencies": {
+    "@bioctl/core": "0.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^24.3.0"
+  },
+  "engines": {
+    "node": ">=22.12.0"
+  }
+}
