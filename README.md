@@ -1,14 +1,12 @@
-# bioctl
+![Kernel Kittens banner.](assets/branding/kernel-kittens-github-1280x400.png)
 
-A white-label link page with a small, isolated AI chat and a terminal settings harness.
+# Profile Relay
 
-Links open first. Chat is a separate tab. The site owner controls the name, copy, colors, links, model provider, model, context, domain, and whether any bioctl credit appears. The default footer is blank.
+Profile Relay is a white-label profile link page with an optional isolated AI chat. Links open first. Chat is a separate tab.
+
+The site owner controls the name, copy, colors, links, model provider, model, context, domain, and whether any bioctl credit appears. The default footer is blank.
 
 This is a Kernel Kittens open-source project under Apache-2.0.
-
-## Why this is custom
-
-We checked the current self-hosted options before building. LittleLink is an excellent MIT-licensed static link page, but it has no server or chat boundary. LinkStack and Nexo Links add multi-user dashboards, databases, and product weight that this project does not need. The chat relay and local connector are the important part here, so a small purpose-built codebase is easier to audit.
 
 ## What is included
 
@@ -25,7 +23,7 @@ We checked the current self-hosted options before building. LittleLink is an exc
 
 ## Security model
 
-Prompt injection protection is not a magic filter. bioctl makes the model low-consequence instead:
+Prompt injection protection is not a magic filter. Profile Relay keeps the model low-consequence instead:
 
 - The model receives no tools, browser, filesystem, email, account, shell, or arbitrary network access.
 - Trusted instructions, retrieved context, and visitor input are separate messages.
@@ -38,7 +36,7 @@ Prompt injection protection is not a magic filter. bioctl makes the model low-co
 - The public chat endpoint has bounded request size, bounded output, and a rate limit.
 - Model output renders as text, not HTML.
 
-The local model runtime is still a separate process. Run it as an unprivileged user or container, give it no host mounts, and block outbound network access if the runtime does not need it. bioctl does not pretend a system prompt is a sandbox.
+The local model runtime is still a separate process. Run it as an unprivileged user or container, give it no host mounts, and block outbound network access if the runtime does not need it. Profile Relay does not pretend a system prompt is a sandbox.
 
 ## Quick start with Docker
 
@@ -46,6 +44,7 @@ Requirements: Docker Engine with Compose v2.
 
 ```sh
 cp .env.example .env
+mkdir -p apps/web/public
 docker compose up -d --build
 ```
 
@@ -65,6 +64,8 @@ Edit these files directly or run the terminal harness:
 
 - `config/site.json`: identity, colors, links, provider, model, limits, footer
 - `config/context.json`: public, local-only, or disabled context entries
+
+The existing bioctl package names and BIOCTL_* environment variables remain compatibility identifiers.
 
 Build and open the harness:
 
@@ -100,7 +101,7 @@ Remote compatible endpoints must use HTTPS. Loopback development endpoints may u
 
 Cloud API keys stay on the server. They are never included in page data or connector jobs.
 
-## Local model connector
+## Deployment and local connector
 
 The connector runs beside your model, usually on your PC. It polls the site over HTTPS, sends a claimed job to the configured local OpenAI-compatible endpoint, and posts back plain text. Nothing needs an inbound port on your home network.
 
@@ -127,8 +128,6 @@ BIOCTL_MODEL_ENDPOINT
 BIOCTL_MODELS
 ```
 
-## Tailscale
-
 The connector is outbound-only, so a public HTTPS site does not require Tailscale. If the site should remain tailnet-only, run the container on a machine with Tailscale and publish the local port with Tailscale Serve:
 
 ```sh
@@ -137,9 +136,7 @@ tailscale serve --bg http://127.0.0.1:3000
 
 Use the resulting `https://...ts.net` address as `BIOCTL_SITE_URL`. For a containerized Tailscale client, persist `TS_STATE_DIR` so the node identity survives restarts. Keep auth keys in `.env`, never in Compose or Git.
 
-## Bring your own domain
-
-Point the domain to the host, then reverse proxy to port 3000. A minimal Caddy block is:
+To use a custom domain, point it to the host, then reverse proxy to port 3000. A minimal Caddy block is:
 
 ```caddyfile
 bio.example.com {
@@ -173,4 +170,4 @@ Review `SECURITY.md` before exposing the chat publicly.
 
 ## License
 
-Apache License 2.0. See `LICENSE`.
+Built by [Kernel Kittens](https://github.com/KernelKittens). Licensed under the [Apache License 2.0](LICENSE).
