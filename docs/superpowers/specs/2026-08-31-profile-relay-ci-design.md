@@ -1,15 +1,17 @@
 # Profile Relay CI design
 
-Status: Approved design, implementation not started
+Status: Approved design, implementation authorized
 Date: 2026-08-31
 Repository: KernelKittens/profile-relay
 Base commit: 62845e282e9f97159230fec06e476945d3cec14f
 
 ## Boundary
 
-This document defines a private, design-only change. Writing and committing this specification does not change the public repository, open pull requests, branch settings, releases, deployments, or user data.
+This document was written as a private, design-only change. Writing and committing the original specification did not change the public repository, open pull requests, branch settings, releases, deployments, or user data.
 
-A later implementation may change only the CI workflow and Dependabot limits described here. Public push, pull request creation, merge, and branch protection remain separate approval gates.
+Moo later authorized implementation and a verified, fast-forward public push to main. That approval covers the CI workflow, Dependabot limits, this clean-checkout correction, and the implementation plan. It does not cover pull request changes, releases, deployments, or repository settings.
+
+The configuration implementation may change only the CI workflow and Dependabot limits described here. Pull request creation, merge, and branch protection remain separate approval gates.
 
 ## Current state
 
@@ -18,6 +20,8 @@ The repository has root scripts for linting, type checking, unit tests, applicat
 There is no repository-owned file under .github/workflows. GitHub therefore has no project CI check to run on pull requests or pushes to main.
 
 Five Dependabot pull requests are open for major development dependency updates. They were opened from an older main commit and have no project CI result. They must stay open and unmerged during this change.
+
+On a clean checkout, the web typecheck needs Next.js route types before TypeScript runs. Next.js generates the global LayoutProps helper during next dev, next build, or next typegen. The workflow must run next typegen before the standalone typecheck instead of relying on files left by an earlier build.
 
 The GitHub Actions Dependabot updater failed in run 33317130881 because it could not find an action manifest or workflow file to update.
 
@@ -95,11 +99,14 @@ The Quality job runs these commands in order:
 
 ~~~sh
 npm ci
+npm exec --workspace @bioctl/web -- next typegen
 npm run lint
 npm run typecheck
 npm test
 npm run build
 ~~~
+
+The explicit type generation keeps the typecheck valid on a clean runner while preserving typecheck before the production build. It creates only ignored Next.js output.
 
 Every command fails the job on a nonzero exit. No step uses continue-on-error.
 
@@ -141,7 +148,7 @@ The workflow does not run on self-hosted infrastructure, deploy an application, 
 
 A failed command produces a failed job. A canceled superseded run remains distinguishable from a test failure.
 
-If npm ci fails, later steps in that job do not run. If the application build fails in Browser, Playwright does not start. If Playwright or Axe fails, Browser fails even if Quality passed.
+If npm ci or route type generation fails, later steps in that job do not run. If the application build fails in Browser, Playwright does not start. If Playwright or Axe fails, Browser fails even if Quality passed.
 
 An implementation failure that requires application code, tests, package metadata, or lockfile changes is a scope break. Stop and revise the plan instead of including those changes in the CI commit.
 
@@ -151,18 +158,18 @@ Before committing the implementation in an isolated development checkout:
 
 1. Confirm the checkout still starts from the intended public main commit and has no unrelated changes.
 2. Validate .github/workflows/ci.yml with actionlint.
-3. Parse both YAML files and confirm the event scope, read-only permission, concurrency, timeouts, runner, Node version, full action pins, checkout credential setting, cache path, command order, and Dependabot limits.
-4. Run the Quality command sequence from a clean npm ci.
+3. Parse both YAML files and confirm the event scope, read-only permission, concurrency, timeouts, runner, Node version, full action pins, checkout credential setting, cache path, route type generation, command order, and Dependabot limits.
+4. Run the Quality command sequence from a clean npm ci and clean Next.js output.
 5. Install Chromium with Playwright dependencies, build the application, and run npm run test:e2e.
-6. Run git diff --check and confirm only .github/workflows/ci.yml and .github/dependabot.yml changed.
+6. Run git diff --check and confirm the configuration commit changes only .github/workflows/ci.yml and .github/dependabot.yml.
 7. Recheck the five open Dependabot pull requests and confirm none changed state.
 
-After a separately approved public push:
+After the approved public push:
 
-1. Observe one hosted pull request run and confirm both Quality and Browser pass.
-2. Observe the resulting hosted main run and confirm both jobs pass.
-3. Confirm workflow permissions remain read-only and no unexpected artifact, deployment, comment, or release was created.
-4. Do not call CI operational or enforced until these hosted checks are observed. Enforcement still requires separate branch protection approval.
+1. Observe the resulting hosted main run and confirm both jobs pass.
+2. Confirm workflow permissions remain read-only and no unexpected artifact, deployment, comment, or release was created.
+3. Confirm the pull_request trigger is present, but do not call that event operationally observed until a later pull request runs it.
+4. Do not call CI enforced. Enforcement still requires separate branch protection approval.
 
 ## Rollback
 
@@ -172,7 +179,7 @@ Revert the CI and Dependabot configuration commit. This removes the repository-o
 
 - This design is committed privately before implementation starts.
 - The later implementation changes only .github/workflows/ci.yml and .github/dependabot.yml.
-- Quality runs lint, typecheck, unit tests, and the full application build.
+- Quality generates Next.js route types, then runs lint, typecheck, unit tests, and the full application build.
 - Browser installs Chromium, builds before starting the production server, and runs the full Playwright and Axe suite.
 - Both jobs use Node 24, ubuntu-24.04, 20-minute timeouts, read-only permissions, no secrets, and full action SHA pins.
 - Superseded runs are canceled by workflow and pull request or ref.
