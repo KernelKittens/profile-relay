@@ -8,6 +8,10 @@ The site owner controls the name, copy, colors, links, model provider, model, co
 
 This is a Kernel Kittens open-source project under Apache-2.0.
 
+## Project status
+
+As checked on September 6, 2026, the package version is `0.1.0` and no versioned GitHub release has been published. The repository includes the profile page, optional chat, local connector, and Docker setup described below. [Continuous integration](https://github.com/KernelKittens/profile-relay/actions/workflows/ci.yml) runs quality and browser checks. Review the deployment settings and data boundaries before using it publicly.
+
 ## What is included
 
 - Mobile-first profile page with Links selected by default
